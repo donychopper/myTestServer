@@ -1,9 +1,39 @@
 #!/bin/sh
-sudo vconfig rem eth0.4
-sudo vconfig rem eth0.6
-sudo vconfig rem eth0.7
-sudo killall pppoe-server
-sudo service isc-dhcp-server stop
+#
+# Author : Joba Yang
+# Date   : 2013/07/08
+# Email  : donychopper@gmail.com
+#
+
+#
+# Clean all visual interface and routing WAN service
+#
+
+testing=$(ifconfig | grep eth0.4)
+if [ "$testing" != "" ]; then
+	sudo vconfig rem eth0.4
+fi
+testing=$(ifconfig | grep eth0.6)
+if [ "$testing" != "" ]; then
+	sudo vconfig rem eth0.6
+fi
+testing=$(ifconfig | grep eth0.7)
+if [ "$testing" != "" ]; then
+	sudo vconfig rem eth0.7
+fi
+PoeServer=$(ps ax | grep pppoe-server | grep eth0.4)
+if [ "$PoeServer" != "" ]; then
+	sudo killall pppoe-server
+fi
+DhcpServer=$(sudo service isc-dhcp-server status | grep running)
+if [ "$DhcpServer" != "" ]; then
+	sudo service isc-dhcp-server stop
+fi
+
+# 
+# Setup up all visual interface and routing WAN service
+# 
+
 sudo vconfig add eth0 4
 sudo vconfig add eth0 6
 sudo vconfig add eth0 7
